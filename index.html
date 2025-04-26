@@ -165,16 +165,20 @@
 
   let savedEndTime = localStorage.getItem("countdownEndTime");
 
+  // If no end time is stored, calculate and store it for the first time
   if (!savedEndTime) {
     let futureTime = new Date();
     futureTime.setDate(futureTime.getDate() + 60); // Add 60 days from today
 
+    // Store the end time in localStorage for persistence across tabs
     savedEndTime = futureTime.toISOString();
     localStorage.setItem("countdownEndTime", savedEndTime);
   }
 
+  // Convert the saved end time back into a Date object
   let targetTime = new Date(savedEndTime);
 
+  // Initialize the countdown
   $('.cd100').countdown100({
     endtimeYear: targetTime.getFullYear(),
     endtimeMonth: targetTime.getMonth() + 1, // months are 0-11
@@ -182,7 +186,7 @@
     endtimeHours: targetTime.getHours(),
     endtimeMinutes: targetTime.getMinutes(),
     endtimeSeconds: targetTime.getSeconds(),
-    timeZone: "Asia/Kathmandu"
+    timeZone: "Asia/Kathmandu" // Apply timezone correctly
   });
 
 })(jQuery);

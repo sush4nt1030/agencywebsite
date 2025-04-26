@@ -100,37 +100,94 @@
 <!--===============================================================================================-->
 	<script src="vendor/select2/select2.min.js"></script>
 <!--===============================================================================================-->
-	<script src="vendor/countdowntime/flipclock.min.js"></script>
-	<script src="vendor/countdowntime/moment.min.js"></script>
-	<script src="vendor/countdowntime/moment-timezone.min.js"></script>
-	<script src="vendor/countdowntime/moment-timezone-with-data.min.js"></script>
-	<script src="vendor/countdowntime/countdowntime.js"></script>
-	<script>
-		$('.cd100').countdown100({
-			/*Set Endtime here*/
-			/*Endtime must be > current time*/
-			endtimeYear: 0,
-			endtimeMonth: 2,
-			endtimeDate: 60,
-			endtimeHours: 20,
-			endtimeMinutes: 20,
-			endtimeSeconds: 20,
-			timeZone: ""
-			// ex:  timeZone: "Asia/Kathmandu"
-			//go to " http://momentjs.com/timezone/ " to get timezone
-		});
+<script src="vendor/countdowntime/flipclock.min.js"></script>
+<script src="vendor/countdowntime/moment.min.js"></script>
+<script src="vendor/countdowntime/moment-timezone.min.js"></script>
+<script src="vendor/countdowntime/moment-timezone-with-data.min.js"></script>
+<script src="vendor/countdowntime/countdowntime.js"></script>
 
-		
-	</script>
-<!--===============================================================================================-->
-	<script src="vendor/tilt/tilt.jquery.min.js"></script>
-	<script >
-		$('.js-tilt').tilt({
-			scale: 1.1
-		})
-	</script>
-<!--===============================================================================================-->
-	<script src="js/main.js"></script>
+<script>
+(function ($) {
+  "use strict";
+
+  $.fn.extend({
+    countdown100: function (options) {
+      var defaults = {
+        timeZone: "",
+        endtimeYear: 0,
+        endtimeMonth: 0,
+        endtimeDate: 0,
+        endtimeHours: 0,
+        endtimeMinutes: 0,
+        endtimeSeconds: 0,
+      }
+
+      var options = $.extend(defaults, options);
+
+      return this.each(function () {
+        var obj = $(this);
+        var timeNow = new Date();
+
+        var tZ = options.timeZone;
+        var endYear = options.endtimeYear;
+        var endMonth = options.endtimeMonth;
+        var endDate = options.endtimeDate;
+        var endHours = options.endtimeHours;
+        var endMinutes = options.endtimeMinutes;
+        var endSeconds = options.endtimeSeconds;
+
+        var deadline;
+        if (tZ == "") {
+          deadline = new Date(endYear, endMonth - 1, endDate, endHours, endMinutes, endSeconds);
+        } else {
+          deadline = moment.tz([endYear, endMonth - 1, endDate, endHours, endMinutes, endSeconds], tZ).format();
+        }
+
+        var t = Date.parse(deadline) - Date.parse(new Date());
+
+        var clock = $(obj).FlipClock(t / 1000, {
+          clockFace: 'DailyCounter',
+          countdown: true
+        });
+
+        // Remove countdown only when finished
+        clock.on('stop', function () {
+          localStorage.removeItem("countdownEndTime");
+        });
+
+      });
+    }
+  });
+
+  // ================================
+  // Setup savedEndTime
+  // ================================
+
+  let savedEndTime = localStorage.getItem("countdownEndTime");
+
+  if (!savedEndTime) {
+    // If not saved, create a NEW target time
+    let futureTime = new Date();
+    futureTime.setDate(futureTime.getDate() + 60); // example 60 days
+
+    savedEndTime = futureTime.toISOString();
+    localStorage.setItem("countdownEndTime", savedEndTime);
+  }
+
+  let targetTime = new Date(savedEndTime);
+
+  $('.cd100').countdown100({
+    endtimeYear: targetTime.getFullYear(),
+    endtimeMonth: targetTime.getMonth() + 1,
+    endtimeDate: targetTime.getDate(),
+    endtimeHours: targetTime.getHours(),
+    endtimeMinutes: targetTime.getMinutes(),
+    endtimeSeconds: targetTime.getSeconds(),
+    timeZone: "Asia/Kathmandu"
+  });
+
+})(jQuery);
+</script>
 
 </body>
 </html>

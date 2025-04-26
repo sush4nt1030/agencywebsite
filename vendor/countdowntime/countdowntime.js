@@ -45,7 +45,17 @@
             clockFace: 'DailyCounter',
             countdown: true
           });
+              // Clear localStorage only when countdown really ends
+              clock.on('stop', function() {
+                localStorage.removeItem("countdownEndTime");
+            });
+          });
+      }
+  });
 
+  // =======================
+  // Setup savedEndTime
+  // =======================
 
         });
       }

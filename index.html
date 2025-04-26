@@ -151,7 +151,7 @@
 
         clock.on('stop', function () {
           // Countdown finished
-          localStorage.removeItem("countdownEndTime");
+          setCookie("countdownEndTime", "", -1); // Clear cookie when countdown ends
           console.log("Countdown finished!");
         });
 
@@ -163,34 +163,60 @@
   // Save 60 days target only first time
   // ================================
 
-  let savedEndTime = localStorage.getItem("countdownEndTime");
+  let savedEndTime = getCookie("countdownEndTime");
 
-  // If no end time is stored, calculate and store it for the first time
+  console.log("Saved End Time (from cookie):", savedEndTime);
+
   if (!savedEndTime) {
     let futureTime = new Date();
     futureTime.setDate(futureTime.getDate() + 60); // Add 60 days from today
 
-    // Store the end time in localStorage for persistence across tabs
+    // Store the new end time in a cookie for persistence across tabs
     savedEndTime = futureTime.toISOString();
-    localStorage.setItem("countdownEndTime", savedEndTime);
+    setCookie("countdownEndTime", savedEndTime, 60); // Cookie expires in 60 days
+
+    console.log("New End Time Set in Cookie:", savedEndTime);
   }
 
   // Convert the saved end time back into a Date object
   let targetTime = new Date(savedEndTime);
 
-  // Initialize the countdown
+  // Initialize the countdown timer
   $('.cd100').countdown100({
     endtimeYear: targetTime.getFullYear(),
-    endtimeMonth: targetTime.getMonth() + 1, // months are 0-11
+    endtimeMonth: targetTime.getMonth() + 1,
     endtimeDate: targetTime.getDate(),
     endtimeHours: targetTime.getHours(),
     endtimeMinutes: targetTime.getMinutes(),
     endtimeSeconds: targetTime.getSeconds(),
-    timeZone: "Asia/Kathmandu" // Apply timezone correctly
+    timeZone: "Asia/Kathmandu"
   });
+
+  // Helper functions for cookies
+  function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  }
+
+  function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  }
 
 })(jQuery);
 </script>
+
 
 </body>
 </html>

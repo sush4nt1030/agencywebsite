@@ -126,7 +126,6 @@
 
       return this.each(function () {
         var obj = $(this);
-        var timeNow = new Date();
 
         var tZ = options.timeZone;
         var endYear = options.endtimeYear;
@@ -150,9 +149,10 @@
           countdown: true
         });
 
-        // Remove countdown only when finished
         clock.on('stop', function () {
+          // Countdown finished
           localStorage.removeItem("countdownEndTime");
+          console.log("Countdown finished!");
         });
 
       });
@@ -160,15 +160,14 @@
   });
 
   // ================================
-  // Setup savedEndTime
+  // Save 60 days target only first time
   // ================================
 
   let savedEndTime = localStorage.getItem("countdownEndTime");
 
   if (!savedEndTime) {
-    // If not saved, create a NEW target time
     let futureTime = new Date();
-    futureTime.setDate(futureTime.getDate() + 60); // example 60 days
+    futureTime.setDate(futureTime.getDate() + 60); // Add 60 days from today
 
     savedEndTime = futureTime.toISOString();
     localStorage.setItem("countdownEndTime", savedEndTime);
@@ -178,7 +177,7 @@
 
   $('.cd100').countdown100({
     endtimeYear: targetTime.getFullYear(),
-    endtimeMonth: targetTime.getMonth() + 1,
+    endtimeMonth: targetTime.getMonth() + 1, // months are 0-11
     endtimeDate: targetTime.getDate(),
     endtimeHours: targetTime.getHours(),
     endtimeMinutes: targetTime.getMinutes(),
